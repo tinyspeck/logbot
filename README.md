@@ -4,6 +4,18 @@ logbot
 A very simple IRC bot. Accepts messages to broadcast via UDP and logs messages to MySQL.
 
 
+Requirements
+------------
+
+You'll need to grab:
+
+* felixge's excellent <a href="http://github.com/felixge/node-mysql">node-mysql</a>
+* martynsmith's <a href="http://github.com/martynsmith/node-irc">node-irc</a>
+
+You can probably install these via <code>npm</code>, but I still don't understand how npm chooses forks.
+Clone the above masters and <code>npm link</code> them if you're unsure.
+
+
 Setup
 -----
 
