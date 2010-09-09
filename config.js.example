@@ -10,4 +10,7 @@ exports.config = {
 	irc_password	: null,
 	irc_nick	: 'logbot',
 	irc_channels	: ['#devel', '#random'],
+
+	udp_port	: 8675,
+	default_channel	: '#devel',
 };

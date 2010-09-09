@@ -1,8 +1,14 @@
 var sys = require('sys');
 var irc = require('irc');
 var mysql = require('mysql');
+var dgram = require('dgram');
 var config = require('./config').config;
 
+
+//
+// we'll use the same db connection object over and over, connecting
+// each time we need to write something
+//
 
 var db = new mysql.Client({
 	host: config.db_host,
@@ -11,6 +17,10 @@ var db = new mysql.Client({
 	database: config.db_name,
 });
 
+
+//
+// this will be the IRC bot component
+//
 
 function logbot(){
 
@@ -48,6 +58,10 @@ function logbot(){
 	this.client.on('topic',  function(chan, topic, nick){
 		self.log_item(chan, nick, 'topic', topic);
 	});
+
+	this.send = function(chan, msg){
+		self.client.say(chan, msg);
+	};
 
 	// notice
 	// nick
@@ -104,5 +118,54 @@ function logbot(){
 	}
 }
 
-new logbot();
+
+//
+// and this will be our udp server
+//
+
+function udpserver(logbot){
+
+	var self = this;
+
+	this.logbot = logbot;
+
+	this.server = dgram.createSocket('udp4', function(msg, rinfo){
+		var text = msg.toString('utf8');
+		self.handle_datagram(text);
+	});
+
+	this.handle_datagram = function(msg){
+
+		console.log("got datagram: "+msg);
+
+		var re = /^(#\S+)\s(.*)$/i;
+		var m = re.exec(msg);
+		if (m != null){
+			var chans = m[1].split(',');
+			msg = m[2];
+
+			for (var i=0; i<chans.length; i++){
+				this.send_message(chans[i], msg);
+			}
+		}else{
+			this.send_message(config.default_channel, msg);
+		}
+	};
+
+	this.send_message = function(chan, msg){
+		console.log("\tsending to "+chan+" :: "+msg);
+		self.logbot.send(chan, msg);
+	};
+
+	this.server.bind(config.udp_port);
+}
+
+
+
+//
+// finally, create them
+//
+
+var logbot = new logbot();
+var udpserver = new udpserver(logbot);
 
