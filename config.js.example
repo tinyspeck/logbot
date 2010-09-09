@@ -1,0 +1,13 @@
+
+exports.config = {
+	db_host		: 'localhost',
+	db_name		: 'node',
+	db_user		: 'node',
+	db_pass		: 'node',
+	db_table	: 'events',
+
+	irc_server	: 'irc.network.com',
+	irc_password	: null,
+	irc_nick	: 'logbot',
+	irc_channels	: ['#devel', '#random'],
+};
