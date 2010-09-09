@@ -61,6 +61,7 @@ function logbot(){
 
 	this.send = function(chan, msg){
 		self.client.say(chan, msg);
+		self.log_item(chan, config.irc_nick, 'text', msg);
 	};
 
 	// notice
